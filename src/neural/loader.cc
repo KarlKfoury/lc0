@@ -223,17 +223,30 @@ std::string DiscoverWeightsFile() {
     data_dirs.emplace_back(dir + (dir.back() == '/' ? "" : "/") + "lc0");
   }
 
-  for (const auto& dir : data_dirs) {
-    // Open all files in <dir> amd <dir>/networks,
+for (const auto& dir : data_dirs) {
+    // Open all files in <dir> and <dir>/networks,
     // ones which are >= kMinFileSize are candidates.
-    std::vector<std::pair<time_t, std::string> > time_and_filename;
+    std::vector<std::pair<time_t, std::string>> time_and_filename;
     for (const auto& path : {"", "/networks"}) {
-      for (const auto& file : GetFileList(dir + path)) {
-        const std::string filename = dir + path + "/" + file;
-        if (GetFileSize(filename) < kMinFileSize) continue;
-        time_and_filename.emplace_back(GetFileTime(filename), filename);
-      }
+        for (const auto& file : GetFileList(dir + path)) {
+            const std::string filename = dir + path + "/" + file;
+            if (GetFileSize(filename) < kMinFileSize) continue;
+            time_and_filename.emplace_back(GetFileTime(filename), filename);
+        }
     }
+    std::vector<std::string> extra_dirs = {
+        ExpandPath("~/.cache/lc0/networks"),  
+        "/usr/share/lc0/networks"            
+    };
+
+    for (const auto& extra_dir : extra_dirs) {
+        for (const auto& file : GetFileList(extra_dir)) {
+            const std::string filename = extra_dir + "/" + file;
+            if (GetFileSize(filename) < kMinFileSize) continue;
+            time_and_filename.emplace_back(GetFileTime(filename), filename);
+        }
+    }
+}
 
     std::sort(time_and_filename.rbegin(), time_and_filename.rend());
 
