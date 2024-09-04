@@ -175,7 +175,9 @@ SearchParams::WDLRescaleParams SimplifiedWDLRescaleParams(
   return SearchParams::WDLRescaleParams(ratio, diff);
 }
 }  // namespace
-
+const OptionId SearchParams::kSyzygy50MoveRuleId{
+    "syzygy-50-move-rule", "Syzygy50MoveRule",
+    "Use 50-move rule to treat blessed losses and cursed wins as draw."};
 const OptionId SearchParams::kMiniBatchSizeId{
     "minibatch-size", "MinibatchSize",
     "How many positions the engine tries to batch together for parallel NN "
@@ -531,6 +533,7 @@ void SearchParams::Populate(OptionsParser* options) {
       1.25;
   options->Add<BoolOption>(kOutOfOrderEvalId) = true;
   options->Add<FloatOption>(kMaxOutOfOrderEvalsFactorId, 0.0f, 100.0f) = 2.4f;
+  options->Add<BoolOption>(kSyzygy50MoveRuleId) = true;
   options->Add<BoolOption>(kStickyEndgamesId) = true;
   options->Add<BoolOption>(kSyzygyFastPlayId) = false;
   options->Add<IntOption>(kMultiPvId, 1, 500) = 1;
@@ -640,6 +643,7 @@ SearchParams::SearchParams(const OptionsDict& options)
       kMaxCollisionEvents(options.Get<int>(kMaxCollisionEventsId)),
       kMaxCollisionVisits(options.Get<int>(kMaxCollisionVisitsId)),
       kOutOfOrderEval(options.Get<bool>(kOutOfOrderEvalId)),
+      kStickyEndgames(options.Get<bool>(kSyzygy50MoveRuleId)),
       kStickyEndgames(options.Get<bool>(kStickyEndgamesId)),
       kSyzygyFastPlay(options.Get<bool>(kSyzygyFastPlayId)),
       kHistoryFill(EncodeHistoryFill(options.Get<std::string>(kHistoryFillId))),
