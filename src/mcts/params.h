@@ -98,6 +98,7 @@ class SearchParams {
   int GetMaxCollisionEvents() const { return kMaxCollisionEvents; }
   int GetMaxCollisionVisits() const { return kMaxCollisionVisits; }
   bool GetOutOfOrderEval() const { return kOutOfOrderEval; }
+  bool GetSyzygy50MoveRule() const { return kSyzygy50MoveRule; }
   bool GetStickyEndgames() const { return kStickyEndgames; }
   bool GetSyzygyFastPlay() const { return kSyzygyFastPlay; }
   int GetMultiPv() const { return options_.Get<int>(kMultiPvId); }
@@ -194,6 +195,7 @@ class SearchParams {
   static const OptionId kMaxCollisionEventsId;
   static const OptionId kMaxCollisionVisitsId;
   static const OptionId kOutOfOrderEvalId;
+  static const OptionId kSyzygy50MoveRuleId;
   static const OptionId kStickyEndgamesId;
   static const OptionId kSyzygyFastPlayId;
   static const OptionId kMultiPvId;
@@ -262,6 +264,7 @@ class SearchParams {
   const int kMaxCollisionEvents;
   const int kMaxCollisionVisits;
   const bool kOutOfOrderEval;
+  const bool kSyzygy50MoveRule;
   const bool kStickyEndgames;
   const bool kSyzygyFastPlay;
   const FillEmptyHistory kHistoryFill;
