@@ -2016,10 +2016,11 @@ void SearchWorker::ExtendNode(Node* node, int depth,
           }
         }
         // If the colors seem backwards, check the checkmate check above.
-        if (wdl == WDL_WIN) {
+        const auto enable_50_move_rule = params_.GetSyzygy50MoveRule();
+        if (wdl >= (enable_50_move_rule ? WDL_WIN : WDL_CURSED_WIN)) {
           node->MakeTerminal(GameResult::BLACK_WON, m,
                              Node::Terminal::Tablebase);
-        } else if (wdl == WDL_LOSS) {
+        } else if (wdl <= (enable_50_move_rule ? WDL_LOSS : WDL_BLESSED_LOSS)) {
           node->MakeTerminal(GameResult::WHITE_WON, m,
                              Node::Terminal::Tablebase);
         } else {  // Cursed wins and blessed losses count as draws.
