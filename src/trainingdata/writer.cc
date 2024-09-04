@@ -46,13 +46,14 @@ std::string GetLc0CacheDirectory() {
 }  // namespace
 
 TrainingDataWriter::TrainingDataWriter(int game_id) {
+  static std::string unique_id = Random::Get().GetString(12);
   static std::string directory =
-      GetLc0CacheDirectory() + "data-" + Random::Get().GetString(12);
+      GetLc0CacheDirectory() + "data-" + unique_id;
   // It's fine if it already exists.
   CreateDirectory(directory.c_str());
 
   std::ostringstream oss;
-  oss << directory << '/' << "game_" << std::setfill('0') << std::setw(6)
+  oss << directory << '/' << "game_" << unique_id << std::setfill('0') << std::setw(6)
       << game_id << ".gz";
 
   filename_ = oss.str();
