@@ -439,6 +439,50 @@ void SelfPlayTournament::PlayOneGame(int game_number) {
   }
 }
 
+const int workInProcess_show_period_ = 20;
+Mutex workInProcess_mutex_;
+enum class WorkInProgressType {
+    begin, end, newgame, endgame, move
+};
+void ShowWorkInProcess(WorkInProgressType, int gameIdx = -1);
+
+
+void SelfPlayTournament::ShowWorkInProcess(WorkInProgressType type, int game_id) {
+    static std::chrono::steady_clock::time_point lastShowTime;
+    std::string statusMessage;
+    auto timeSinceLastShow = std::chrono::steady_clock::now() - lastShowTime;
+
+    if (type == WorkInProgressType::move) {
+        if (timeSinceLastShow.count() < statusUpdateInterval_) {
+            return; // Skip output if within the time interval
+        }
+        statusMessage = "Processing move for game ID: " + std::to_string(game_id);
+    } 
+    else if (type == WorkInProgressType::newgame) {
+        statusMessage = "New game initiated with ID: " + std::to_string(game_id);
+    } 
+    else if (type == WorkInProgressType::endgame) {
+        statusMessage = "Game with ID: " + std::to_string(game_id) + " has concluded.";
+    } 
+    else if (type == WorkInProgressType::begin) {
+        statusMessage = "Training session has started.";
+    } 
+    else if (type == WorkInProgressType::end) {
+        statusMessage = "Training session has finished.";
+    } 
+    else {
+        return; // If none of the conditions match, return
+    }
+
+    // Lock mutex for thread safety
+    {
+        Mutex::Lock lock(workInProcess_mutex_);
+        lastShowTime = std::chrono::steady_clock::now();
+        std::cout << statusMessage << std::endl;
+    }
+}
+
+
 void SelfPlayTournament::PlayMultiGames(int game_id, size_t game_count) {
   bool use_value = kValueGamesSize > 0;
   std::vector<Opening> openings;
